@@ -25,8 +25,9 @@ pip install flask
 to install the package in local environment.
 
 ## Usage
-
-1. Start the server
+1. Download this entire folder
+     
+2. Start the server from the folder
 
 ```
 python main.py
