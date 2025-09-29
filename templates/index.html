@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>File Upload</title>
+  <link rel="stylesheet" href="/static/pico.css">
+  <style>
+	  .error {
+	    border-style: solid;
+	    padding: 25px;
+	    border-color: #F06048;
+	    border-radius: 10px;
+	  }
+	  .success {
+	    border-style: solid;
+	    padding: 25px;
+	    border-color: #00CC88;
+	    border-radius: 10px;
+	  }
+
+  </style>
+</head>
+
+<body class="container">
+  <main>
+    <nav aria-label="breadcrumb">
+      <ul>
+        <li>
+          <a href="/">
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/>
+            </svg>  
+            Home
+          </a>
+        </li>
+        {%- set dirlist = subpath.split('/') -%}
+        {%- set dirpath = '/' -%} 
+        {% for directory in dirlist %}
+        {%- set dirpath = dirpath+directory+'/' -%}
+        <li><a href="{{dirpath}}">{{directory}}</a></li>
+        {% endfor %}
+      </ul>
+    </nav>
+    
+    <!-- Display Messages -->
+    <div style="margin-bottom: 1em">
+		  {% with messages = get_flashed_messages(with_categories=true) %}
+		  {% if messages %}
+		  {% for category, message in messages %}
+		  <div class={{category}}><span id="message"> <span> {{message}} </span></span></div>
+		  {% endfor %}
+		  {% endif %}
+		  {% endwith %}
+	  </div>
+
+    <div class="grid">
+	    <div>
+	      <article>
+	        <header> 
+	          <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24"> <path fill-rule="evenodd" d="M12 3a1 1 0 0 1 .78.375l4 5a1 1 0 1 1-1.56 1.25L13 6.85V14a1 1 0 1 1-2 0V6.85L8.78 9.626a1 1 0 1 1-1.56-1.25l4-5A1 1 0 0 1 12 3ZM9 14v-1H5a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-4v1a3 3 0 1 1-6 0Zm8 2a1 1 0 1 0 0 2h.01a1 1 0 1 0 0-2H17Z" clip-rule="evenodd"/>
+            </svg>
+            Upload File 
+	        </header>
+	        <form action='/upload/{{subpath}}' method=post enctype=multipart/form-data>
+		        <input type=file name=file>
+		        <input type=submit value=Upload>
+          </form>
+        </article>
+      </div>
+      <div>
+        <article>
+          <header>
+            <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
+  <path fill-rule="evenodd" d="M5 4a2 2 0 0 0-2 2v1h10.968l-1.9-2.28A2 2 0 0 0 10.532 4H5ZM3 19V9h18v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Zm9-8.5a1 1 0 0 1 1 1V13h1.5a1 1 0 1 1 0 2H13v1.5a1 1 0 1 1-2 0V15H9.5a1 1 0 1 1 0-2H11v-1.5a1 1 0 0 1 1-1Z" clip-rule="evenodd"/>
+            </svg>
+            Create Directory 
+          </header>
+          <form action='/create-directory/{{subpath}}' method='post'>
+		        <input type="text" id="dname" name="dname" placeholder="Directory Name">
+		        <input type="submit" value="Create Directory">
+	        </form>
+	      </article>
+      </div>
+    </div>
+	  {% if files|length == 0 %}
+	  <p> No file/folder exists in this directory </p>
+	  {% else %}
+	  <table>
+		  <tr>
+			  <th>File Name</th>
+			  <th></th>
+		  </tr>
+		  {% for i in range(0, files|length) %}
+		  <tr>
+			  {% if is_directory[i] %}
+			  {% if subpath=='' %}
+			  <td>
+				  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-folder" viewBox="0 0 16 16">
+    <path d="M.54 3.87.5 3a2 2 0 0 1 2-2h3.672a2 2 0 0 1 1.414.586l.828.828A2 2 0 0 0 9.828 3h3.982a2 2 0 0 1 1.992 2.181l-.637 7A2 2 0 0 1 13.174 14H2.826a2 2 0 0 1-1.991-1.819l-.637-7a2 2 0 0 1 .342-1.31zM2.19 4a1 1 0 0 0-.996 1.09l.637 7a1 1 0 0 0 .995.91h10.348a1 1 0 0 0 .995-.91l.637-7A1 1 0 0 0 13.81 4zm4.69-1.707A1 1 0 0 0 6.172 2H2.5a1 1 0 0 0-1 .981l.006.139q.323-.119.684-.12h5.396z"/>
+          </svg>
+				  <a href="/{{files[i]}}">{{files[i]}}</a>
+			  </td>
+			  <td></td>
+			  {% else %}
+			  <td>
+				  <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 8H4m0-2v13a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1V9a1 1 0 0 0-1-1h-5.032a1 1 0 0 1-.768-.36l-1.9-2.28a1 1 0 0 0-.768-.36H5a1 1 0 0 0-1 1Z"/>
+          </svg>
+
+				  <a href="/{{subpath}}/{{files[i]}}">{{files[i]}}</a>
+			  </td>
+			  <td></td>
+			  {% endif %}
+			  {% else %}
+			  {% if subpath=='' %}
+			  <td>{{files[i]}}</td>
+			  <td><a href="/{{files[i]}}">View/Download</a></td>
+			  {% else %}
+			  <td>{{files[i]}}</td>
+			  <td><a href="/{{subpath}}/{{files[i]}}">View/Download</a></td>
+			  {% endif %}
+			  {% endif %}
+		  </tr>
+		  {% endfor %}
+	  </table>
+	  {% endif %}
+  </main>
+
+  <footer>
+    <p>© QEL Lab 2025</p>
+  </footer>
+</body>
+</html>
